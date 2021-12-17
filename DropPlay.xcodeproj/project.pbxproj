@@ -8,18 +8,24 @@
 
 /* Begin PBXBuildFile section */
 		AC3BAECE276C9F1E00362EDD /* DropPlayApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAECD276C9F1E00362EDD /* DropPlayApp.swift */; };
-		AC3BAED0276C9F1E00362EDD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAECF276C9F1E00362EDD /* ContentView.swift */; };
+		AC3BAED0276C9F1E00362EDD /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAECF276C9F1E00362EDD /* PlayerView.swift */; };
 		AC3BAED2276C9F2000362EDD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC3BAED1276C9F2000362EDD /* Assets.xcassets */; };
 		AC3BAED5276C9F2000362EDD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC3BAED4276C9F2000362EDD /* Preview Assets.xcassets */; };
+		AC3BAEE0276CA85700362EDD /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEDF276CA85700362EDD /* PlayerViewModel.swift */; };
+		AC3BAEE3276CA9E300362EDD /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEE2276CA9E300362EDD /* Player.swift */; };
+		AC3BAEE7276CB00A00362EDD /* Intro.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AC3BAEE6276CB00A00362EDD /* Intro.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AC3BAECA276C9F1E00362EDD /* DropPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DropPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC3BAECD276C9F1E00362EDD /* DropPlayApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropPlayApp.swift; sourceTree = "<group>"; };
-		AC3BAECF276C9F1E00362EDD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AC3BAECF276C9F1E00362EDD /* PlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerView.swift; sourceTree = "<group>"; };
 		AC3BAED1276C9F2000362EDD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AC3BAED4276C9F2000362EDD /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		AC3BAED6276C9F2000362EDD /* DropPlay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DropPlay.entitlements; sourceTree = "<group>"; };
+		AC3BAEDF276CA85700362EDD /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
+		AC3BAEE2276CA9E300362EDD /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		AC3BAEE6276CB00A00362EDD /* Intro.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Intro.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,8 +59,10 @@
 			isa = PBXGroup;
 			children = (
 				AC3BAECD276C9F1E00362EDD /* DropPlayApp.swift */,
-				AC3BAECF276C9F1E00362EDD /* ContentView.swift */,
-				AC3BAED1276C9F2000362EDD /* Assets.xcassets */,
+				AC3BAEDC276CA28B00362EDD /* Views */,
+				AC3BAEE1276CA86200362EDD /* ViewModels */,
+				AC3BAEE4276CA9E800362EDD /* Player */,
+				AC3BAEE5276CAFEE00362EDD /* Supporting Files */,
 				AC3BAED6276C9F2000362EDD /* DropPlay.entitlements */,
 				AC3BAED3276C9F2000362EDD /* Preview Content */,
 			);
@@ -67,6 +75,39 @@
 				AC3BAED4276C9F2000362EDD /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		AC3BAEDC276CA28B00362EDD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AC3BAECF276C9F1E00362EDD /* PlayerView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AC3BAEE1276CA86200362EDD /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AC3BAEDF276CA85700362EDD /* PlayerViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AC3BAEE4276CA9E800362EDD /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				AC3BAEE2276CA9E300362EDD /* Player.swift */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		AC3BAEE5276CAFEE00362EDD /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AC3BAED1276C9F2000362EDD /* Assets.xcassets */,
+				AC3BAEE6276CB00A00362EDD /* Intro.mp3 */,
+			);
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,6 +168,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC3BAEE7276CB00A00362EDD /* Intro.mp3 in Resources */,
 				AC3BAED5276C9F2000362EDD /* Preview Assets.xcassets in Resources */,
 				AC3BAED2276C9F2000362EDD /* Assets.xcassets in Resources */,
 			);
@@ -139,7 +181,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC3BAED0276C9F1E00362EDD /* ContentView.swift in Sources */,
+				AC3BAEE3276CA9E300362EDD /* Player.swift in Sources */,
+				AC3BAEE0276CA85700362EDD /* PlayerViewModel.swift in Sources */,
+				AC3BAED0276C9F1E00362EDD /* PlayerView.swift in Sources */,
 				AC3BAECE276C9F1E00362EDD /* DropPlayApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -198,7 +242,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -253,7 +297,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -279,6 +323,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.PinkStyx.DropPlay;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -304,6 +349,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.PinkStyx.DropPlay;
 				PRODUCT_NAME = "$(TARGET_NAME)";
