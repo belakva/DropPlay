@@ -9,41 +9,51 @@ import SwiftUI
 
 struct PlayerView: View {
     let viewModel = PlayerViewModel()
-    @State var isDisabled = true
-    @State var isPlaying = false
-    @State var meterLevel: CGFloat = 0
 
     var body: some View {
         VStack {
             Spacer()
-            vUMeter
+            VUMeterView(viewModel: viewModel)
             Spacer()
-            playPause
+            PlayPauseView(viewModel: viewModel)
         }
         .background(Color.black)
     }
 
-    private var vUMeter: some View {
-        Color.white
-        .frame(
-            width: 35,
-            height: 35 * meterLevel
-        )
-        .opacity(0.5 * meterLevel)
-        .onReceive(viewModel.output.meterLevel) { meterLevel = $0 }
+    struct VUMeterView: View {
+        let viewModel: PlayerViewModel
+
+        @State var meterLevel: CGFloat = 0
+
+        var body: some View {
+            Color.white
+            .frame(
+                width: 35,
+                height: 35 * meterLevel
+            )
+            .opacity(0.5 * meterLevel)
+            .onReceive(viewModel.output.meterLevel) { meterLevel = $0 }
+        }
     }
 
-    private var playPause: some View {
-        Button {
-            isPlaying ? viewModel.input.pause.send() : viewModel.input.play.send()
-        } label: {
-            isPlaying ? Image(systemName: "pause.fill") : Image(systemName: "play.fill")
+    struct PlayPauseView: View {
+        let viewModel: PlayerViewModel
+
+        @State var isPlaying = false
+        @State var isDisabled = true
+
+        var body: some View {
+            Button {
+                isPlaying ? viewModel.input.pause.send() : viewModel.input.play.send()
+            } label: {
+                isPlaying ? Image(systemName: "pause.fill") : Image(systemName: "play.fill")
+            }
+            .frame(width: 40)
+            .padding(40)
+            .disabled(isDisabled)
+            .onReceive(viewModel.output.isPlayButtonEnabled) { isDisabled = !$0 }
+            .onReceive(viewModel.output.isPlaying) { isPlaying = $0 }
         }
-        .frame(width: 40)
-        .padding(40)
-        .disabled(isDisabled)
-        .onReceive(viewModel.output.isPlayButtonEnabled) { isDisabled = !$0 }
-        .onReceive(viewModel.output.isPlaying) { isPlaying = $0 }
     }
 }
 
