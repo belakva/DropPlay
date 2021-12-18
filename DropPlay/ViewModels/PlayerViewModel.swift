@@ -16,7 +16,7 @@ final class PlayerViewModel {
     }
 
     struct Output {
-        let isButtonEnabled: AnyPublisher<Bool, Never>
+        let isPlayButtonEnabled: AnyPublisher<Bool, Never>
         let isPlaying: AnyPublisher<Bool, Never>
         let meterLevel: AnyPublisher<CGFloat, Never>
     }
@@ -33,7 +33,7 @@ final class PlayerViewModel {
         self.player = player
 
         output = Output(
-            isButtonEnabled: player.$isPlayerReady.eraseToAnyPublisher(),
+            isPlayButtonEnabled: player.$isPlayerReady.eraseToAnyPublisher(),
             isPlaying: player.$isPlaying.eraseToAnyPublisher(),
             meterLevel: player.$meterLevel.map { CGFloat($0) }.eraseToAnyPublisher()
         )

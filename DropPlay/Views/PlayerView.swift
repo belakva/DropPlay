@@ -42,7 +42,7 @@ struct PlayerView: View {
         .frame(width: 40)
         .padding(40)
         .disabled(isDisabled)
-        .onReceive(viewModel.output.isButtonEnabled) { isDisabled = !$0 }
+        .onReceive(viewModel.output.isPlayButtonEnabled) { isDisabled = !$0 }
         .onReceive(viewModel.output.isPlaying) { isPlaying = $0 }
     }
 }
