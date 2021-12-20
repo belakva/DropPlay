@@ -125,7 +125,7 @@ final class Player {
     private func scaledPower(power: Float) -> Float {
         guard power.isFinite else { return 0 }
 
-        let minDb: Float = -80
+        let minDb: Float = -40
 
         if power < minDb {
             return 0.0
