@@ -10,20 +10,67 @@ import Combine
 
 final class PlayerViewModel {
 
+    // Вьюмодель посылает плееру события из вьюхи
+    // Плеер посылает вьюмодели события, которые с ним случаются
+    // Вьюмодель мапит их в стэйт вьюхи
+
     struct Input {
-        let load = PassthroughSubject<URL, URLError>()
-        let play = PassthroughSubject<Void, Never>()
-        let pause = PassthroughSubject<Void, Never>()
+        struct View {
+            let load = PassthroughSubject<Data?, Never>()
+            let play = PassthroughSubject<Void, Never>()
+            let pause = PassthroughSubject<Void, Never>()
+        }
+        struct Player {
+            let didStartPreparing = PassthroughSubject<Void, Never>()
+            let readyToPlay = PassthroughSubject<Void, Never>()
+            let didStartPlayback = PassthroughSubject<Void, Never>()
+            let paused = PassthroughSubject<Void, Never>()
+            let didReachEnd = PassthroughSubject<Void, Never>()
+            let errors = PassthroughSubject<DropPlay.Player.PlayerError, Never>()
+            let meterLevel = PassthroughSubject<Float, Never>()
+        }
+        let view = View()
+        let player = Player()
     }
 
     struct Output {
-        let isPlayButtonEnabled: AnyPublisher<Bool, Never>
-        let isPlaying: AnyPublisher<Bool, Never>
-        let meterLevel: AnyPublisher<CGFloat, Never>
+        struct View {
+            let isFileLoaded: AnyPublisher<Bool, Never>
+            let isPlayButtonEnabled: AnyPublisher<Bool, Never>
+            let isPlaying: AnyPublisher<Bool, Never>
+            let errorText: AnyPublisher<String, Never>
+            let meterLevel: AnyPublisher<CGFloat, Never>
+        }
+        struct Player {
+            let load: AnyPublisher<URL, Never>
+            let play: AnyPublisher<Void, Never>
+            let pause: AnyPublisher<Void, Never>
+        }
+        let view: View
+        let player: Player
     }
 
-    enum URLError: Error {
-        case invalidURL
+    private enum State {
+        case empty
+        case preparing
+        case readyToPlay
+        case playing
+        case paused
+    }
+
+    enum URLParseError: Error, LocalizedError {
+        case noData
+        case convertDataToString
+        case buildURLFromString
+
+        public var errorDescription: String? {
+            let commonPart = "File URL parsing failed: "
+            switch self {
+            case .noData: return commonPart + "No Data."
+            case .convertDataToString:  return commonPart + "Data to String conversion failed."
+            case .buildURLFromString:   return commonPart + "Failed building URL form String."
+            }
+        }
     }
 
     let input = Input()
@@ -31,25 +78,81 @@ final class PlayerViewModel {
 
     private let player: Player
 
-    private var bag = Set<AnyCancellable>()
-
-    init(player: Player = Player()) {
+    init(player: Player) {
 
         self.player = player
 
+        let loadErrors = PassthroughSubject<URLParseError, Never>()
+        let load = input.view.load.map { data -> URL? in
+
+            guard let data = data else {
+                loadErrors.send(.noData)
+                return nil
+            }
+
+            guard let string = String(data: data, encoding: .utf8) else {
+                loadErrors.send(.convertDataToString)
+                return nil
+            }
+
+            guard let url = URL(string: string) else {
+                loadErrors.send(.buildURLFromString)
+                return nil
+            }
+
+            return url
+        }.compactMap { $0 }.erase()
+
+        let errorMessages = loadErrors.map { $0.localizedDescription }
+            .merge(with: input.player.errors.map { $0.localizedDescription })
+
+        let state = Self.state(input: input.player)
+
         output = Output(
-            isPlayButtonEnabled: player.$isPlayerReady.eraseToAnyPublisher(),
-            isPlaying: player.$isPlaying.eraseToAnyPublisher(),
-            meterLevel: player.$meterLevel.map { CGFloat($0) }.eraseToAnyPublisher()
+            view: Output.View(
+                isFileLoaded: state.map { $0 != .empty }.erase(),
+                isPlayButtonEnabled: state.map { $0 != .empty && $0 != .preparing }.erase(),
+                isPlaying: state.map { $0 == .playing }.erase(),
+                errorText: errorMessages.erase(),
+                meterLevel: input.player.meterLevel.map { CGFloat ($0) }.erase()
+            ),
+            player: Output.Player(
+                load: load,
+                play: input.view.play.erase(),
+                pause: input.view.pause.erase()
+            )
         )
+    }
 
-        input.play.sink { [weak self] in
-            self?.player.play()
-        }.store(in: &bag)
+    private static func state(input: Input.Player) -> AnyPublisher<State, Never> {
 
-        input.pause.sink { [weak self] in
-            self?.player.pause()
-        }.store(in: &bag)
+        enum StateChange {
+            case preparing
+            case readyToPlay
+            case playing
+            case paused
+            case didReachEnd
+            case error
+        }
+
+        let didStartPreparing = input.didStartPreparing.map { StateChange.preparing }
+        let readyToPlay = input.readyToPlay.map { StateChange.readyToPlay }
+        let didStartPlayback = input.didStartPlayback.map { StateChange.playing }
+        let paused = input.paused.map { StateChange.paused }
+        let didReachEnd = input.didReachEnd.map { StateChange.didReachEnd }
+        let error = input.errors.map { _ in StateChange.error }
+
+        let stateChange = didStartPreparing.merge(with: readyToPlay, didStartPlayback, paused, didReachEnd, error)
+
+        return stateChange.scan(.empty) { state, action in
+            switch action {
+            case .preparing:    return .preparing
+            case .readyToPlay:  return .readyToPlay
+            case .playing:      return .playing
+            case .paused, .didReachEnd: return .paused
+            case .error:         return .empty
+            }
+        }.erase()
     }
 }
 

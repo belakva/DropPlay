@@ -10,39 +10,19 @@ import Combine
 
 final class Player {
 
-    struct Input {
-        let load = PassthroughSubject<URL, Never>() // ошибки по созданию урлов должны фильтроваться во вьюмодели
-        let play = PassthroughSubject<Void, Never>()
-        let pause = PassthroughSubject<Void, Never>()
+    typealias Output = PlayerViewModel.Input.Player
+
+    enum PlayerError: Error {
+        case readFile(errorDescription: String)
+        case startPlayer(errorDescription: String)
+
+        public var errorDescription: String? {
+            switch self {
+            case .readFile(let desc):       return desc
+            case .startPlayer(let desc):    return desc
+            }
+        }
     }
-
-    struct Output {
-        let isPlayButtonEnabled: AnyPublisher<Bool, Never>
-        let isPlaying: AnyPublisher<Bool, Never>
-        let meterLevel: AnyPublisher<CGFloat, Never>
-    }
-
-    // Сначала у меня появились два Bool: isPlayerReady и isPlaying,
-    // но так как isPlaying == true не должно быть возможно, если isPlayerReady == false,
-    // а в такой реализации нет явных ограничений, запрещающих такое состояние,
-    // я решил отказаться от булевых переменных и сделать стэйт-машину.
-
-    private enum State {
-        case empty
-        case loading(URL)
-        case preparing
-        case readyToPlay
-        case playing
-        case paused
-    }
-
-    private enum PlayerError: Error {
-        case playbackFailed(description: String)
-    }
-
-    @Published private(set) var isPlayerReady = false
-    @Published private(set) var isPlaying = false
-    @Published private(set) var meterLevel: Float = 0
 
     private let engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
@@ -50,72 +30,35 @@ final class Player {
     private var audioFile: AVAudioFile?
     private var needsFileScheduled = true
 
-    init() {
-        setupAudio()
+    private var bag = Set<AnyCancellable>()
+
+    func bind(viewModel: PlayerViewModel) {
+        let output = viewModel.input.player
+        let input = viewModel.output.player
+
+        input.load.sink { [weak self] url in // TODO: сделать тест на лики, может не нужен weak
+            do {
+                let file = try AVAudioFile(forReading: url)
+                output.didStartPreparing.send()
+                self?.audioFile = file
+                self?.configureEngine(with: file, output: output)
+            } catch {
+                output.errors.send(.readFile(errorDescription: error.localizedDescription))
+            }
+        }.store(in: &bag)
+
+        input.play.sink { [weak self] in
+            self?.play(output: output)
+        }.store(in: &bag)
+
+        input.pause.sink { [weak self] in
+            self?.pause(output: output)
+        }.store(in: &bag)
     }
 
-    private static func playerState(
-        input: Input,
-        prepare: AnyPublisher<Void, Never>,
-        isPlayerReady: AnyPublisher<Bool, Never>,
-        isPlaying: AnyPublisher<Bool, Never>
-    ) /*-> AnyPublisher<State, Never>*/ {
+    // MARK: - Load
 
-        enum StateChange {
-            case load(URL)
-            case prepare
-            case readyToPlay
-            case play
-            case pause
-            case didReachEnd
-            case error(PlayerError)
-        }
-
-        let load: AnyPublisher<StateChange, Never> = input.load.map { .load($0) }.erase()
-        let preparePub: AnyPublisher<StateChange, Never> = prepare.map { .prepare }.erase()
-
-
-        let stateChange: AnyPublisher<StateChange, Never> = load.merge(with: preparePub).erase()
-    }
-
-    func play() {
-        guard !isPlaying else { return }
-        isPlaying = true
-        connectVolumeTap()
-        if let file = audioFile, needsFileScheduled {
-            schedule(file: file)
-        }
-        player.play()
-    }
-
-    func pause() {
-        guard isPlaying else { return }
-        onPlaybackFinish()
-        player.pause()
-    }
-
-    private func onPlaybackFinish() {
-        isPlaying = false
-        disconnectVolumeTap()
-    }
-
-    // MARK: - Setup
-
-    private func setupAudio() {
-        guard let fileURL = Bundle.main.url(forResource: "Intro", withExtension: "mp3") else {
-            return
-        }
-
-        do {
-            let file = try AVAudioFile(forReading: fileURL)
-            audioFile = file
-            configureEngine(with: file)
-        } catch {
-            print("Error reading the audio file: \(error.localizedDescription)")
-        }
-    }
-
-    private func configureEngine(with file: AVAudioFile) {
+    private func configureEngine(with file: AVAudioFile, output: Output) {
         engine.attach(player)
         engine.connect(
             player,
@@ -127,14 +70,14 @@ final class Player {
         do {
             try engine.start()
 
-            schedule(file: file)
-            isPlayerReady = true
+            schedule(file: file, output: output)
+            output.readyToPlay.send()
         } catch {
-            print("Error starting the player: \(error.localizedDescription)")
+            output.errors.send(.startPlayer(errorDescription: error.localizedDescription))
         }
     }
 
-    private func schedule(file: AVAudioFile) {
+    private func schedule(file: AVAudioFile, output: Output) {
         guard let file = audioFile, needsFileScheduled else {
             return
         }
@@ -143,9 +86,27 @@ final class Player {
         player.scheduleFile(file, at: nil) {
             DispatchQueue.main.async {
                 self.needsFileScheduled = true
-                self.onPlaybackFinish()
+                self.disconnectVolumeTap()
+                output.didReachEnd.send()
             }
         }
+    }
+
+    // MARK: - Playback
+
+    func play(output: Output) {
+        connectVolumeTap(output: output)
+        if let file = audioFile, needsFileScheduled {
+            schedule(file: file, output: output)
+        }
+        player.play()
+        output.didStartPlayback.send()
+    }
+
+    func pause(output: Output) {
+        disconnectVolumeTap()
+        player.pause()
+        output.paused.send()
     }
 
     // MARK: - VU Meter
@@ -164,7 +125,7 @@ final class Player {
         }
     }
 
-    private func connectVolumeTap() {
+    private func connectVolumeTap(output: Output) {
         let format = engine.mainMixerNode.outputFormat(forBus: 0)
 
         engine.mainMixerNode.installTap(
@@ -193,13 +154,13 @@ final class Player {
             let meterLevel = self.scaledPower(power: avgPower)
 
             DispatchQueue.main.async {
-                self.meterLevel = self.isPlaying ? meterLevel : 0
+                output.meterLevel.send(meterLevel)
             }
         }
     }
 
     private func disconnectVolumeTap() {
         engine.mainMixerNode.removeTap(onBus: 0)
-        meterLevel = 0
+        // TODO: нужно ли сбрасывать метер? meterLevel = 0
     }
 }
