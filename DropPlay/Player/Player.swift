@@ -153,13 +153,11 @@ final class Player {
                 from: 0,
                 to: Int(buffer.frameLength),
                 by: buffer.stride
-            )
-                .map { channelDataValue[$0] }
+            ).map { channelDataValue[$0] }
 
             let rms = sqrt(channelDataValueArray.map {
                 return $0 * $0
-            }
-                            .reduce(0, +) / Float(buffer.frameLength))
+            }.reduce(0, +) / Float(buffer.frameLength))
 
             let avgPower = 20 * log10(rms)
             let meterLevel = self.scaledPower(power: avgPower)
@@ -172,6 +170,5 @@ final class Player {
 
     private func disconnectVolumeTap() {
         engine.mainMixerNode.removeTap(onBus: 0)
-        // TODO: нужно ли сбрасывать метер? meterLevel = 0
     }
 }

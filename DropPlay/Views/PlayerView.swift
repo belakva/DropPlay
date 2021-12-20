@@ -13,6 +13,7 @@ struct PlayerView: View {
 
     // Так как в этом приложении всего один MVVM модуль, я собираю его здесь, чтобы не усложнять
     // Обычно сборкой занимается координатор
+
     init() {
         let player = Player()
         viewModel = PlayerViewModel(player: player)
@@ -87,10 +88,11 @@ struct PlayerView: View {
         var body: some View {
             Color.white
             .frame(
-                width: 35,
-                height: 35 * meterLevel
+                width: 50,
+                height: 50 * meterLevel
             )
             .opacity(0.5 * meterLevel)
+            .padding(75)
             .onReceive(viewModel.output.view.meterLevel) { meterLevel = $0 }
         }
     }
