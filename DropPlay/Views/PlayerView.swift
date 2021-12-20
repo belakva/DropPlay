@@ -38,12 +38,14 @@ struct PlayerView: View {
         var body: some View {
             if isFileLoaded {
                 VUMeterView(viewModel: viewModel)
+                    .onReceive(viewModel.output.view.isFileLoaded) { isFileLoaded = $0 }
             } else {
                 DropItemView(viewModel: viewModel)
                     .onReceive(viewModel.output.view.isFileLoaded) { isFileLoaded = $0 }
             }
         }
     }
+
 
     struct DropItemView: View {
         let viewModel: PlayerViewModel
@@ -54,6 +56,8 @@ struct PlayerView: View {
 
         var body: some View {
             Text(text)
+            .multilineTextAlignment(.center)
+            .frame(width: 200, height: 100)
             .onDrop(of: [type], isTargeted: $isDraggedOver)
             { providers -> Bool in
                 providers.first?.loadDataRepresentation(
@@ -67,9 +71,6 @@ struct PlayerView: View {
                 })
                 return true
             }
-            .multilineTextAlignment(.center)
-            .frame(width: 200)
-            .padding(40)
             .border(isDraggedOver ? Color.white : Color.clear)
             .onReceive(viewModel.output.view.errorText) { text = errorText($0) }
         }
