@@ -8,7 +8,37 @@
 import AVFoundation
 import Combine
 
-class Player {
+final class Player {
+
+    struct Input {
+        let load = PassthroughSubject<URL, Never>() // ошибки по созданию урлов должны фильтроваться во вьюмодели
+        let play = PassthroughSubject<Void, Never>()
+        let pause = PassthroughSubject<Void, Never>()
+    }
+
+    struct Output {
+        let isPlayButtonEnabled: AnyPublisher<Bool, Never>
+        let isPlaying: AnyPublisher<Bool, Never>
+        let meterLevel: AnyPublisher<CGFloat, Never>
+    }
+
+    // Сначала у меня появились два Bool: isPlayerReady и isPlaying,
+    // но так как isPlaying == true не должно быть возможно, если isPlayerReady == false,
+    // а в такой реализации нет явных ограничений, запрещающих такое состояние,
+    // я решил отказаться от булевых переменных и сделать стэйт-машину.
+
+    private enum State {
+        case empty
+        case loading(URL)
+        case preparing
+        case readyToPlay
+        case playing
+        case paused
+    }
+
+    private enum PlayerError: Error {
+        case playbackFailed(description: String)
+    }
 
     @Published private(set) var isPlayerReady = false
     @Published private(set) var isPlaying = false
@@ -22,6 +52,30 @@ class Player {
 
     init() {
         setupAudio()
+    }
+
+    private static func playerState(
+        input: Input,
+        prepare: AnyPublisher<Void, Never>,
+        isPlayerReady: AnyPublisher<Bool, Never>,
+        isPlaying: AnyPublisher<Bool, Never>
+    ) /*-> AnyPublisher<State, Never>*/ {
+
+        enum StateChange {
+            case load(URL)
+            case prepare
+            case readyToPlay
+            case play
+            case pause
+            case didReachEnd
+            case error(PlayerError)
+        }
+
+        let load: AnyPublisher<StateChange, Never> = input.load.map { .load($0) }.erase()
+        let preparePub: AnyPublisher<StateChange, Never> = prepare.map { .prepare }.erase()
+
+
+        let stateChange: AnyPublisher<StateChange, Never> = load.merge(with: preparePub).erase()
     }
 
     func play() {

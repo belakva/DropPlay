@@ -11,6 +11,7 @@ import Combine
 final class PlayerViewModel {
 
     struct Input {
+        let load = PassthroughSubject<URL, URLError>()
         let play = PassthroughSubject<Void, Never>()
         let pause = PassthroughSubject<Void, Never>()
     }
@@ -19,6 +20,10 @@ final class PlayerViewModel {
         let isPlayButtonEnabled: AnyPublisher<Bool, Never>
         let isPlaying: AnyPublisher<Bool, Never>
         let meterLevel: AnyPublisher<CGFloat, Never>
+    }
+
+    enum URLError: Error {
+        case invalidURL
     }
 
     let input = Input()
