@@ -19,10 +19,13 @@ struct PlayerView: View {
         player.bind(viewModel: viewModel)
     }
 
+    @State private var isFileLoaded = false
+
     var body: some View {
         VStack {
             Spacer()
-            CentralView(viewModel: viewModel)
+            CentralView(viewModel: viewModel, isFileLoaded: $isFileLoaded)
+                .onReceive(viewModel.output.view.isFileLoaded) { isFileLoaded = $0 }
             Spacer()
             PlayPauseView(viewModel: viewModel)
         }
@@ -31,21 +34,17 @@ struct PlayerView: View {
 
     struct CentralView: View {
         let viewModel: PlayerViewModel
-
-        @State private var isFileLoaded = false
+        @Binding var isFileLoaded: Bool
 
         @ViewBuilder
         var body: some View {
             if isFileLoaded {
                 VUMeterView(viewModel: viewModel)
-                    .onReceive(viewModel.output.view.isFileLoaded) { isFileLoaded = $0 }
             } else {
                 DropItemView(viewModel: viewModel)
-                    .onReceive(viewModel.output.view.isFileLoaded) { isFileLoaded = $0 }
             }
         }
     }
-
 
     struct DropItemView: View {
         let viewModel: PlayerViewModel
