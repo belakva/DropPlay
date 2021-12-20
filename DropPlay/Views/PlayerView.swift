@@ -91,7 +91,7 @@ struct PlayerView: View {
                 width: 50,
                 height: 50 * meterLevel
             )
-            .opacity(0.5 * meterLevel)
+            .opacity(0.9 * meterLevel)
             .padding(75)
             .onReceive(viewModel.output.view.meterLevel) { meterLevel = $0 }
         }
