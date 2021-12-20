@@ -36,7 +36,10 @@ final class Player {
         let output = viewModel.input.player
         let input = viewModel.output.player
 
-        input.load.sink { [weak self] url in // TODO: сделать тест на лики, может не нужен weak
+        input.load
+            .receive(on: DispatchQueue.main)
+            .sink
+        { [weak self] url in // TODO: сделать тест на лики, может не нужен weak
             do {
                 let file = try AVAudioFile(forReading: url)
                 output.didStartPreparing.send()
@@ -47,11 +50,17 @@ final class Player {
             }
         }.store(in: &bag)
 
-        input.play.sink { [weak self] in
+        input.play
+            .receive(on: DispatchQueue.main)
+            .sink
+        { [weak self] in
             self?.play(output: output)
         }.store(in: &bag)
 
-        input.pause.sink { [weak self] in
+        input.pause
+            .receive(on: DispatchQueue.main)
+            .sink
+        { [weak self] in
             self?.pause(output: output)
         }.store(in: &bag)
     }
@@ -72,6 +81,8 @@ final class Player {
 
             schedule(file: file, output: output)
             output.readyToPlay.send()
+
+            play(output: output)
         } catch {
             output.errors.send(.startPlayer(errorDescription: error.localizedDescription))
         }

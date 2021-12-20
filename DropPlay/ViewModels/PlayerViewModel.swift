@@ -10,8 +10,9 @@ import Combine
 
 final class PlayerViewModel {
 
-    // Вьюмодель посылает плееру события из вьюхи
-    // Плеер посылает вьюмодели события, которые с ним случаются
+    // Из вьюхи во вьюмодель приходят события
+    // Вьюмодель подготавливает их и посылает плееру
+    // Плеер посылает во вьюмодель события, которые с ним случаются
     // Вьюмодель мапит их в стэйт вьюхи
 
     struct Input {
@@ -19,6 +20,7 @@ final class PlayerViewModel {
             let load = PassthroughSubject<Data?, Never>()
             let play = PassthroughSubject<Void, Never>()
             let pause = PassthroughSubject<Void, Never>()
+            let errors = PassthroughSubject<Error, Never>()
         }
         struct Player {
             let didStartPreparing = PassthroughSubject<Void, Never>()
@@ -59,6 +61,7 @@ final class PlayerViewModel {
     }
 
     enum URLParseError: Error, LocalizedError {
+        case loadData(errorDescription: String)
         case noData
         case convertDataToString
         case buildURLFromString
@@ -66,7 +69,8 @@ final class PlayerViewModel {
         public var errorDescription: String? {
             let commonPart = "File URL parsing failed: "
             switch self {
-            case .noData: return commonPart + "No Data."
+            case .loadData(let desc):   return "Load Data Failed: " + desc
+            case .noData:               return commonPart + "No Data."
             case .convertDataToString:  return commonPart + "Data to String conversion failed."
             case .buildURLFromString:   return commonPart + "Failed building URL form String."
             }
@@ -83,6 +87,7 @@ final class PlayerViewModel {
         self.player = player
 
         let loadErrors = PassthroughSubject<URLParseError, Never>()
+
         let load = input.view.load.map { data -> URL? in
 
             guard let data = data else {
@@ -103,8 +108,10 @@ final class PlayerViewModel {
             return url
         }.compactMap { $0 }.erase()
 
-        let errorMessages = loadErrors.map { $0.localizedDescription }
-            .merge(with: input.player.errors.map { $0.localizedDescription })
+        let errorMessages = loadErrors.map { $0.localizedDescription }.merge(with:
+            input.player.errors.map { $0.localizedDescription },
+            input.view.errors.map { URLParseError.loadData(errorDescription: $0.localizedDescription) }.map { $0.localizedDescription }
+        )
 
         let state = Self.state(input: input.player)
 
@@ -149,8 +156,8 @@ final class PlayerViewModel {
             case .preparing:    return .preparing
             case .readyToPlay:  return .readyToPlay
             case .playing:      return .playing
-            case .paused, .didReachEnd: return .paused
-            case .error:         return .empty
+            case .paused:       return .paused
+            case .error, .didReachEnd:  return .empty
             }
         }.erase()
     }

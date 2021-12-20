@@ -50,34 +50,32 @@ struct PlayerView: View {
         let type = "public.file-url"
 
         @State private var isDraggedOver = false
-        @State private var errorDescirption: String? = nil
+        @State private var text = "Feed Me"
 
         var body: some View {
-            Text(text(errorDescription: errorDescirption)) // Потестить
-                .onDrop(of: [type], isTargeted: $isDraggedOver)
+            Text(text)
+            .onDrop(of: [type], isTargeted: $isDraggedOver)
             { providers -> Bool in
                 providers.first?.loadDataRepresentation(
                     forTypeIdentifier: type,
                     completionHandler: { (data, error) in
-
-                        guard error == nil else { // может все таки отправлять ошибки во вьюмодель
-                            errorDescirption = error?.localizedDescription
-                            return
+                        if let error = error {
+                            viewModel.input.view.errors.send(error)
+                        } else {
+                            viewModel.input.view.load.send(data)
                         }
-
-                        viewModel.input.view.load.send(data)
                 })
                 return true
             }
-            .border(isDraggedOver ? Color.red : Color.clear)
+            .multilineTextAlignment(.center)
+            .frame(width: 200)
+            .padding(40)
+            .border(isDraggedOver ? Color.white : Color.clear)
+            .onReceive(viewModel.output.view.errorText) { text = errorText($0) }
         }
 
-        func text(errorDescription: String?) -> String {
-            guard let errorDescirption = errorDescirption else {
-                return "Feed Me"
-            }
-
-            return "Error: \n \(errorDescirption). \n Try another file."
+        func errorText(_ text: String) -> String {
+            return "Error: \n \(text). \n Try another file."
         }
     }
 

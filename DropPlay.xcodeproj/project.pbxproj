@@ -13,7 +13,6 @@
 		AC3BAED5276C9F2000362EDD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC3BAED4276C9F2000362EDD /* Preview Assets.xcassets */; };
 		AC3BAEE0276CA85700362EDD /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEDF276CA85700362EDD /* PlayerViewModel.swift */; };
 		AC3BAEE3276CA9E300362EDD /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEE2276CA9E300362EDD /* Player.swift */; };
-		AC3BAEE7276CB00A00362EDD /* Intro.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AC3BAEE6276CB00A00362EDD /* Intro.mp3 */; };
 		AC3BAEE9276F384200362EDD /* Publisher+Erase.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEE8276F384200362EDD /* Publisher+Erase.swift */; };
 /* End PBXBuildFile section */
 
@@ -26,7 +25,6 @@
 		AC3BAED6276C9F2000362EDD /* DropPlay.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DropPlay.entitlements; sourceTree = "<group>"; };
 		AC3BAEDF276CA85700362EDD /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
 		AC3BAEE2276CA9E300362EDD /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
-		AC3BAEE6276CB00A00362EDD /* Intro.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Intro.mp3; sourceTree = "<group>"; };
 		AC3BAEE8276F384200362EDD /* Publisher+Erase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Erase.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,7 +106,6 @@
 			isa = PBXGroup;
 			children = (
 				AC3BAED1276C9F2000362EDD /* Assets.xcassets */,
-				AC3BAEE6276CB00A00362EDD /* Intro.mp3 */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";
@@ -179,7 +176,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC3BAEE7276CB00A00362EDD /* Intro.mp3 in Resources */,
 				AC3BAED5276C9F2000362EDD /* Preview Assets.xcassets in Resources */,
 				AC3BAED2276C9F2000362EDD /* Assets.xcassets in Resources */,
 			);
