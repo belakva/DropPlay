@@ -14,7 +14,18 @@
 		AC3BAEE0276CA85700362EDD /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEDF276CA85700362EDD /* PlayerViewModel.swift */; };
 		AC3BAEE3276CA9E300362EDD /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEE2276CA9E300362EDD /* Player.swift */; };
 		AC3BAEE9276F384200362EDD /* Publisher+Erase.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEE8276F384200362EDD /* Publisher+Erase.swift */; };
+		AC3BAEF227711E8700362EDD /* DropPlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3BAEF127711E8700362EDD /* DropPlayTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AC3BAEF327711E8700362EDD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC3BAEC2276C9F1E00362EDD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AC3BAEC9276C9F1E00362EDD;
+			remoteInfo = DropPlay;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		AC3BAECA276C9F1E00362EDD /* DropPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DropPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -26,10 +37,19 @@
 		AC3BAEDF276CA85700362EDD /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
 		AC3BAEE2276CA9E300362EDD /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		AC3BAEE8276F384200362EDD /* Publisher+Erase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Erase.swift"; sourceTree = "<group>"; };
+		AC3BAEEF27711E8700362EDD /* DropPlayTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DropPlayTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC3BAEF127711E8700362EDD /* DropPlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropPlayTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		AC3BAEC7276C9F1E00362EDD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC3BAEEC27711E8700362EDD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -43,6 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				AC3BAECC276C9F1E00362EDD /* DropPlay */,
+				AC3BAEF027711E8700362EDD /* DropPlayTests */,
 				AC3BAECB276C9F1E00362EDD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -51,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				AC3BAECA276C9F1E00362EDD /* DropPlay.app */,
+				AC3BAEEF27711E8700362EDD /* DropPlayTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,6 +140,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		AC3BAEF027711E8700362EDD /* DropPlayTests */ = {
+			isa = PBXGroup;
+			children = (
+				AC3BAEF127711E8700362EDD /* DropPlayTests.swift */,
+			);
+			path = DropPlayTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -138,6 +168,24 @@
 			productReference = AC3BAECA276C9F1E00362EDD /* DropPlay.app */;
 			productType = "com.apple.product-type.application";
 		};
+		AC3BAEEE27711E8700362EDD /* DropPlayTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC3BAEF527711E8700362EDD /* Build configuration list for PBXNativeTarget "DropPlayTests" */;
+			buildPhases = (
+				AC3BAEEB27711E8700362EDD /* Sources */,
+				AC3BAEEC27711E8700362EDD /* Frameworks */,
+				AC3BAEED27711E8700362EDD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AC3BAEF427711E8700362EDD /* PBXTargetDependency */,
+			);
+			name = DropPlayTests;
+			productName = DropPlayTests;
+			productReference = AC3BAEEF27711E8700362EDD /* DropPlayTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -150,6 +198,10 @@
 				TargetAttributes = {
 					AC3BAEC9276C9F1E00362EDD = {
 						CreatedOnToolsVersion = 13.1;
+					};
+					AC3BAEEE27711E8700362EDD = {
+						CreatedOnToolsVersion = 13.1;
+						TestTargetID = AC3BAEC9276C9F1E00362EDD;
 					};
 				};
 			};
@@ -167,6 +219,7 @@
 			projectRoot = "";
 			targets = (
 				AC3BAEC9276C9F1E00362EDD /* DropPlay */,
+				AC3BAEEE27711E8700362EDD /* DropPlayTests */,
 			);
 		};
 /* End PBXProject section */
@@ -178,6 +231,13 @@
 			files = (
 				AC3BAED5276C9F2000362EDD /* Preview Assets.xcassets in Resources */,
 				AC3BAED2276C9F2000362EDD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC3BAEED27711E8700362EDD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -196,7 +256,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AC3BAEEB27711E8700362EDD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC3BAEF227711E8700362EDD /* DropPlayTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AC3BAEF427711E8700362EDD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AC3BAEC9276C9F1E00362EDD /* DropPlay */;
+			targetProxy = AC3BAEF327711E8700362EDD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AC3BAED7276C9F2000362EDD /* Debug */ = {
@@ -366,6 +442,54 @@
 			};
 			name = Release;
 		};
+		AC3BAEF627711E8700362EDD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RHH79NBUJ2;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.PinkStyx.DropPlayTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DropPlay.app/Contents/MacOS/DropPlay";
+			};
+			name = Debug;
+		};
+		AC3BAEF727711E8700362EDD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = RHH79NBUJ2;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.PinkStyx.DropPlayTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DropPlay.app/Contents/MacOS/DropPlay";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -383,6 +507,15 @@
 			buildConfigurations = (
 				AC3BAEDA276C9F2000362EDD /* Debug */,
 				AC3BAEDB276C9F2000362EDD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC3BAEF527711E8700362EDD /* Build configuration list for PBXNativeTarget "DropPlayTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC3BAEF627711E8700362EDD /* Debug */,
+				AC3BAEF727711E8700362EDD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

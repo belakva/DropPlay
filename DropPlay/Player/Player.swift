@@ -39,7 +39,7 @@ final class Player {
         input.load
             .receive(on: DispatchQueue.main)
             .sink
-        { [weak self] url in // TODO: сделать тест на лики, может не нужен weak
+        { [weak self] url in
             do {
                 let file = try AVAudioFile(forReading: url)
                 output.didStartPreparing.send()
