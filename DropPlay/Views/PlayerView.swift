@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct PlayerView: View {
 
@@ -23,14 +24,75 @@ struct PlayerView: View {
     @State private var isFileLoaded = false
 
     var body: some View {
-        VStack {
-            Spacer()
-            CentralView(viewModel: viewModel, isFileLoaded: $isFileLoaded)
-                .onReceive(viewModel.output.view.isFileLoaded) { isFileLoaded = $0 }
-            Spacer()
-            PlayPauseView(viewModel: viewModel)
+        ZStack {
+            SharkView(viewModel: viewModel, isFileLoaded: $isFileLoaded)
+            VStack {
+                CentralView(viewModel: viewModel, isFileLoaded: $isFileLoaded)
+                    .onReceive(viewModel.output.view.isFileLoaded) { isFileLoaded = $0 }
+                Spacer()
+                HStack {
+                    StopView(viewModel: viewModel)
+                    Spacer()
+                    PlayPauseView(viewModel: viewModel)
+                }
+            }
         }
-        .background(Color.black)
+    }
+
+    struct SharkView: View {
+        let viewModel: PlayerViewModel
+
+        @Binding var isFileLoaded: Bool
+        @State private var isDraggedOver = false
+
+        let open = "shark_open"
+        let closed = "shark_closed"
+        let type = "public.file-url"
+
+        @ViewBuilder
+        var body: some View {
+            ZStack {
+                if isFileLoaded {
+                    Image(closed)
+                } else if !isDraggedOver {
+                    Image(open)
+                } else {
+                    BlinkView(open: open, closed: closed)
+                }
+            }
+            .onDrop(of: [type], isTargeted: $isDraggedOver)
+            { providers -> Bool in
+                providers.first?.loadDataRepresentation(
+                    forTypeIdentifier: type,
+                    completionHandler: { (data, error) in
+                        if let error = error {
+                            viewModel.input.view.errors.send(error)
+                        } else {
+                            viewModel.input.view.load.send(data)
+                        }
+                    })
+                return true
+            }
+        }
+
+
+        private struct BlinkView: View {
+            @State private var isHowling = false
+
+            let open: String
+            let closed: String
+            let timer = Timer.publish(every: 0.2, on: .main, in: .common).autoconnect()
+
+            var body: some View {
+                ZStack {
+                    isHowling ? Image(open) : Image(closed)
+                }
+                .onReceive(timer) { newCurrentTime in
+                    isHowling.toggle()
+                }
+            }
+
+        }
     }
 
     struct CentralView: View {
@@ -42,36 +104,21 @@ struct PlayerView: View {
             if isFileLoaded {
                 VUMeterView(viewModel: viewModel)
             } else {
-                DropItemView(viewModel: viewModel)
+                InfoView(viewModel: viewModel)
             }
         }
     }
 
-    struct DropItemView: View {
+    struct InfoView: View {
         let viewModel: PlayerViewModel
-        let type = "public.file-url"
 
-        @State private var isDraggedOver = false
         @State private var text = "Feed Me"
 
         var body: some View {
             Text(text)
+            .foregroundColor(.red)
             .multilineTextAlignment(.center)
             .frame(width: 200, height: 100)
-            .onDrop(of: [type], isTargeted: $isDraggedOver)
-            { providers -> Bool in
-                providers.first?.loadDataRepresentation(
-                    forTypeIdentifier: type,
-                    completionHandler: { (data, error) in
-                        if let error = error {
-                            viewModel.input.view.errors.send(error)
-                        } else {
-                            viewModel.input.view.load.send(data)
-                        }
-                })
-                return true
-            }
-            .border(isDraggedOver ? Color.white : Color.clear)
             .onReceive(viewModel.output.view.errorText) { text = errorText($0) }
         }
 
@@ -86,11 +133,14 @@ struct PlayerView: View {
         @State private var meterLevel: CGFloat = 0
 
         var body: some View {
-            Color.white
+            Color.red
             .frame(
                 width: 50,
                 height: 50 * meterLevel
             )
+           // .cornerRadius(25)
+            .clipShape(Circle())
+
             .opacity(0.9 * meterLevel)
             .padding(75)
             .onReceive(viewModel.output.view.meterLevel) { meterLevel = $0 }
@@ -107,13 +157,35 @@ struct PlayerView: View {
             Button {
                 isPlaying ? viewModel.input.view.pause.send() : viewModel.input.view.play.send()
             } label: {
-                isPlaying ? Image(systemName: "pause.fill") : Image(systemName: "play.fill")
+                isPlaying ? Image(systemName: "pause") : Image(systemName: "play.fill")
             }
-            .frame(width: 40)
-            .padding(40)
+            .font(.system(size: 25))
+            .frame(width: 100, height: 100)
+            .background(Color.black)
+            .foregroundColor(.black)
+            .cornerRadius(5)
             .disabled(isDisabled)
             .onReceive(viewModel.output.view.isPlayButtonEnabled) { isDisabled = !$0 }
             .onReceive(viewModel.output.view.isPlaying) { isPlaying = $0 }
+        }
+    }
+
+    struct StopView: View {
+        let viewModel: PlayerViewModel
+
+        @State private var isPlaying = false
+        @State private var isDisabled = true
+
+        var body: some View {
+            Button {
+                viewModel.input.view.pause.send() // stop
+            } label: {
+                Image(systemName: "stop")
+            }
+            .frame(width: 50)
+            .padding(50)
+            .disabled(isDisabled)
+            .onReceive(viewModel.output.view.isPlayButtonEnabled) { isDisabled = !$0 }
         }
     }
 }
