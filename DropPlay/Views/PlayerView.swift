@@ -23,6 +23,13 @@ struct PlayerView: View {
 
     @State private var isFileLoaded = false
 
+    @ViewBuilder
+    func controlImage(name: String) -> some View {
+        Image(name)
+            .resizable()
+            .frame(width: 60, height: 60)
+    }
+
     var body: some View {
         ZStack {
             SharkView(viewModel: viewModel, isFileLoaded: $isFileLoaded)
@@ -60,6 +67,7 @@ struct PlayerView: View {
                     BlinkView(open: open, closed: closed)
                 }
             }
+            .background(Color.white)
             .onDrop(of: [type], isTargeted: $isDraggedOver)
             { providers -> Bool in
                 providers.first?.loadDataRepresentation(
@@ -138,8 +146,8 @@ struct PlayerView: View {
                 width: 50,
                 height: 50 * meterLevel
             )
-           // .cornerRadius(25)
-            .clipShape(Circle())
+           .cornerRadius(25)
+           // .clipShape(Circle())
 
             .opacity(0.9 * meterLevel)
             .padding(75)
@@ -154,17 +162,17 @@ struct PlayerView: View {
         @State private var isDisabled = true
 
         var body: some View {
-            Button {
-                isPlaying ? viewModel.input.view.pause.send() : viewModel.input.view.play.send()
-            } label: {
-                isPlaying ? Image(systemName: "pause") : Image(systemName: "play.fill")
+            ButtonSized {
+                Button {
+                    isPlaying ? viewModel.input.view.pause.send() : viewModel.input.view.play.send()
+                } label: {
+                    ButtonSized {
+                        isPlaying ? Image("pause").resizable() : Image("play").resizable()
+                    }
+                }
+                .buttonStyle(.borderless)
+                .disabled(isDisabled)
             }
-            .font(.system(size: 25))
-            .frame(width: 100, height: 100)
-            .background(Color.black)
-            .foregroundColor(.black)
-            .cornerRadius(5)
-            .disabled(isDisabled)
             .onReceive(viewModel.output.view.isPlayButtonEnabled) { isDisabled = !$0 }
             .onReceive(viewModel.output.view.isPlaying) { isPlaying = $0 }
         }
@@ -173,19 +181,32 @@ struct PlayerView: View {
     struct StopView: View {
         let viewModel: PlayerViewModel
 
-        @State private var isPlaying = false
         @State private var isDisabled = true
 
         var body: some View {
-            Button {
-                viewModel.input.view.pause.send() // stop
-            } label: {
-                Image(systemName: "stop")
+            ButtonSized {
+                Button {
+                    viewModel.input.view.pause.send() // stop
+                } label: {
+                    ButtonSized {
+                        Image("stop").resizable()
+                    }
+                }
+                .buttonStyle(.borderless)
+                .disabled(isDisabled)
             }
-            .frame(width: 50)
-            .padding(50)
-            .disabled(isDisabled)
             .onReceive(viewModel.output.view.isPlayButtonEnabled) { isDisabled = !$0 }
+        }
+    }
+
+    
+    struct ButtonSized<Content: View>: View {
+        @ViewBuilder var content: Content
+
+        var body: some View {
+            content
+                .frame(width: 60, height: 60)
+                .padding(10)
         }
     }
 }
