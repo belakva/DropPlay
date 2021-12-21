@@ -180,7 +180,7 @@ struct PlayerView: View {
         var body: some View {
             ButtonSized {
                 Button {
-                    viewModel.input.view.pause.send() // stop
+                    viewModel.input.view.stop.send()
                 } label: {
                     ButtonSized {
                         Image("stop").resizable()

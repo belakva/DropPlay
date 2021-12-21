@@ -63,6 +63,13 @@ final class Player {
         { [weak self] in
             self?.pause(output: output)
         }.store(in: &bag)
+
+        input.stop
+            .receive(on: DispatchQueue.main)
+            .sink
+        { [weak self] in
+            self?.stop(output: output)
+        }.store(in: &bag)
     }
 
     // MARK: - Load
@@ -95,17 +102,15 @@ final class Player {
 
         needsFileScheduled = false
         player.scheduleFile(file, at: nil) {
-            DispatchQueue.main.async {
-                self.needsFileScheduled = true
-                self.disconnectVolumeTap()
-                output.didReachEnd.send()
+            DispatchQueue.main.async { [weak self] in
+                self?.onStopped(output: output)
             }
         }
     }
 
     // MARK: - Playback
 
-    func play(output: Output) {
+    private func play(output: Output) {
         connectVolumeTap(output: output)
         if let file = audioFile, needsFileScheduled {
             schedule(file: file, output: output)
@@ -114,10 +119,21 @@ final class Player {
         output.didStartPlayback.send()
     }
 
-    func pause(output: Output) {
-        disconnectVolumeTap()
+    private func pause(output: Output) {
         player.pause()
+        disconnectVolumeTap()
         output.paused.send()
+    }
+
+    private func stop(output: Output) {
+        player.stop()
+        onStopped(output: output)
+    }
+
+    private func onStopped(output: Output) {
+        needsFileScheduled = true
+        disconnectVolumeTap()
+        output.didReachEnd.send()
     }
 
     // MARK: - VU Meter

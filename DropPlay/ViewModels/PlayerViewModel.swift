@@ -20,6 +20,7 @@ final class PlayerViewModel {
             let load = PassthroughSubject<Data?, Never>()
             let play = PassthroughSubject<Void, Never>()
             let pause = PassthroughSubject<Void, Never>()
+            let stop = PassthroughSubject<Void, Never>()
             let errors = PassthroughSubject<Error, Never>()
         }
         struct Player {
@@ -47,6 +48,7 @@ final class PlayerViewModel {
             let load: AnyPublisher<URL, Never>
             let play: AnyPublisher<Void, Never>
             let pause: AnyPublisher<Void, Never>
+            let stop: AnyPublisher<Void, Never>
         }
         let view: View
         let player: Player
@@ -126,7 +128,8 @@ final class PlayerViewModel {
             player: Output.Player(
                 load: load,
                 play: input.view.play.erase(),
-                pause: input.view.pause.erase()
+                pause: input.view.pause.erase(),
+                stop: input.view.stop.erase()
             )
         )
     }
