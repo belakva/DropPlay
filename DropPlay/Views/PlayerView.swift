@@ -23,13 +23,6 @@ struct PlayerView: View {
 
     @State private var isFileLoaded = false
 
-    @ViewBuilder
-    func controlImage(name: String) -> some View {
-        Image(name)
-            .resizable()
-            .frame(width: 60, height: 60)
-    }
-
     var body: some View {
         ZStack {
             SharkView(viewModel: viewModel, isFileLoaded: $isFileLoaded)
@@ -95,7 +88,7 @@ struct PlayerView: View {
                 ZStack {
                     isHowling ? Image(open) : Image(closed)
                 }
-                .onReceive(timer) { newCurrentTime in
+                .onReceive(timer) { _ in
                     isHowling.toggle()
                 }
             }
