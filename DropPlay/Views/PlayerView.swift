@@ -44,6 +44,7 @@ struct PlayerView: View {
                 }
             }
         }
+        .background(Color.white)
     }
 
     struct SharkView: View {
@@ -67,7 +68,6 @@ struct PlayerView: View {
                     BlinkView(open: open, closed: closed)
                 }
             }
-            .background(Color.white)
             .onDrop(of: [type], isTargeted: $isDraggedOver)
             { providers -> Bool in
                 providers.first?.loadDataRepresentation(
@@ -112,21 +112,23 @@ struct PlayerView: View {
             if isFileLoaded {
                 VUMeterView(viewModel: viewModel)
             } else {
-                InfoView(viewModel: viewModel)
+                ErrorView(viewModel: viewModel)
             }
         }
     }
 
-    struct InfoView: View {
+    struct ErrorView: View {
         let viewModel: PlayerViewModel
 
-        @State private var text = "Feed Me"
+        @State private var text = ""
 
         var body: some View {
             Text(text)
+            .font(.title)
+            .fontWeight(.bold)
             .foregroundColor(.red)
             .multilineTextAlignment(.center)
-            .frame(width: 200, height: 100)
+            .frame(width: 600, height: 150)
             .onReceive(viewModel.output.view.errorText) { text = errorText($0) }
         }
 
@@ -141,17 +143,9 @@ struct PlayerView: View {
         @State private var meterLevel: CGFloat = 0
 
         var body: some View {
-            Color.red
-            .frame(
-                width: 50,
-                height: 50 * meterLevel
-            )
-           .cornerRadius(25)
-           // .clipShape(Circle())
-
-            .opacity(0.9 * meterLevel)
-            .padding(75)
-            .onReceive(viewModel.output.view.meterLevel) { meterLevel = $0 }
+            Image("brows")
+                .padding(.top, 190 - 60 * meterLevel)
+                .onReceive(viewModel.output.view.meterLevel) { meterLevel = $0 }
         }
     }
 
